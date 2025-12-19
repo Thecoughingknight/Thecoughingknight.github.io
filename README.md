@@ -1,1 +1,1 @@
-# Skibidirune unbloked skool no virus pla y now 
+just put https://thecoughingknight.github.io/
