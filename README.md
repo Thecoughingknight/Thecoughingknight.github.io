@@ -1,1 +1,1 @@
-just put https://thecoughingknight.github.io/
+just use https://thecoughingknight.github.io/
