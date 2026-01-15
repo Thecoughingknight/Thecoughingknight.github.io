@@ -17,6 +17,48 @@
       color: #fff;
     }
 
+    /* Top Bar */
+    header {
+      width: 100%;
+      border-bottom: 1px solid #fff;
+      background: #000;
+    }
+
+    .topbar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 15px;
+      font-size: 0.9rem;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      background: #fff;
+      color: #000;
+      transform: scale(1.05);
+    }
+
     main {
       max-width: 1200px;
       margin: 40px auto;
@@ -139,10 +181,27 @@
       main {
         grid-template-columns: 1fr;
       }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
     }
   </style>
 </head>
 <body>
+
+<header>
+  <div class="topbar">
+    <div class="logo">The Roaring Web</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#latest-games">Games</a>
+      <a href="#announcements">Announcements & News</a>
+    </nav>
+  </div>
+</header>
 
 <main>
 
@@ -154,7 +213,8 @@
     <div class="games-grid">
 
       <!-- GAME 1 (Horror Example) -->
-      <a href="https://sites.google.com/mesquiteisd.org/theroaringweb/games/fnaf-1" style="text-decoration:none; color:white;">
+      <!-- Update this href to your GitHub Pages game path -->
+      <a href="games/fnaf-1.html" style="text-decoration:none; color:white;">
         <article class="game-card" data-category="horror">
           <div class="game-thumbnail">
             <img src="https://i.imgur.com/A69XUv5.png" 
@@ -189,9 +249,19 @@
     </div>
   </section>
 
-  <!-- Categories -->
+  <!-- Sidebar: Announcements + Categories -->
   <aside>
-    <section class="section sidebar-section" id="categories">
+
+    <!-- Announcements & News -->
+    <section class="section" id="announcements">
+      <h2>Announcements & News</h2>
+      <p><strong>01/15/2026:</strong> The Roaring Web is now running on GitHub Pages.</p>
+      <p><strong>Update:</strong> FNAF 1 page is being tested as the first hosted game.</p>
+      <p><strong>Coming Soon:</strong> More games, categories, and a dedicated Neocities hub.</p>
+    </section>
+
+    <!-- Categories -->
+    <section class="section sidebar-section" id="categories" style="margin-top:20px;">
       <h2>Categories</h2>
       <div class="tag-list">
         <button class="tag" data-filter="all">Show All</button>
@@ -203,14 +273,15 @@
         <button class="tag" data-filter="horror">Horror</button>
       </div>
     </section>
+
   </aside>
 
 </main>
 
 <footer>
   &copy; 2026 The Roaring Web. All rights reserved. |
-  <a href="https://youtu.be/dQw4w9WgXcQ?si=XKZtVlCFX9u0l3Ip">Terms of Service</a> •
-  <a href="https://youtu.be/dQw4w9WgXcQ?si=XKZtVlCFX9u0l3Ip">Privacy Policy</a>
+  <a href="#">Terms of Service</a> •
+  <a href="#">Privacy Policy</a>
 </footer>
 
 <!-- CATEGORY FILTER SCRIPT -->
