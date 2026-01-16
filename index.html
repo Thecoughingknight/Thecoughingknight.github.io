@@ -100,7 +100,7 @@ main {
 /* Square thumbnails */
 .game-thumbnail {
   width:100%;
-  aspect-ratio:1/1; /* makes perfect squares */
+  aspect-ratio:1/1;
   border:var(--border);
   border-radius:4px;
   overflow:hidden;
@@ -177,9 +177,77 @@ html { font-size:16px; }
 @media (max-width:1200px) { html { font-size:15px; } }
 @media (max-width:900px) { html { font-size:14px; } }
 @media (max-width:600px) { html { font-size:13px; } }
+
+/* 🔒 Lock Screen */
+#lock-screen {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.lock-box {
+  text-align: center;
+  border: var(--border);
+  padding: 30px;
+  border-radius: var(--radius);
+  background: #111;
+  width: 260px;
+}
+
+.lock-box h1 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+#code-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: var(--border);
+  background: black;
+  color: white;
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+}
+
+#unlock-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: var(--border);
+  background: white;
+  color: black;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#unlock-btn:hover {
+  background: #ddd;
+}
+
+#error-msg {
+  color: red;
+  margin-top: 10px;
+  height: 18px;
+}
 </style>
 </head>
 <body>
+
+<!-- 🔒 LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="lock-box">
+    <h1>Enter Access Code</h1>
+    <input id="code-input" type="password" maxlength="4" placeholder="••••">
+    <button id="unlock-btn">Unlock</button>
+    <p id="error-msg"></p>
+  </div>
+</div>
 
 <header>
   <div class="topbar">
@@ -200,25 +268,7 @@ html { font-size:16px; }
 
     <input class="search" id="search" placeholder="Search games...">
 
-    <div class="games-grid">
-
-      <!-- Example Game -->
-      <a class="game-link" href="games/fnaf-1.html">
-        <article class="game-card">
-          <span class="badge">NEW</span>
-          <div class="game-thumbnail">
-            <img src="https://i.imgur.com/A69XUv5.png" alt="FNAF 1">
-            <div class="overlay">
-              <p>Classic survival horror.</p>
-              <button>▶ Play</button>
-            </div>
-          </div>
-          <div class="game-title">FNAF 1</div>
-          <div class="game-meta">Horror • 2014</div>
-        </article>
-      </a>
-
-    </div>
+    <div class="games-grid"></div>
   </section>
 
 </main>
@@ -238,10 +288,8 @@ async function loadLatestGames() {
   const grid = document.querySelector(".games-grid");
   grid.innerHTML = "";
 
-  // Sort newest → oldest
   games.sort((a, b) => new Date(b.added) - new Date(a.added));
 
-  // Show only the latest 4
   const latest = games.slice(0, 4);
 
   latest.forEach(game => {
@@ -263,15 +311,13 @@ async function loadLatestGames() {
     `;
   });
 
-  // Re‑initialize search after cards load
   initSearch();
 }
 
 loadLatestGames();
 
-
 // -----------------------------
-// Search Filter (works with JSON-loaded cards)
+// Search Filter
 // -----------------------------
 function initSearch() {
   const search = document.getElementById('search');
@@ -288,8 +334,29 @@ function initSearch() {
     });
   });
 }
-</script>
 
+// -----------------------------
+// 🔒 Lock Screen Logic
+// -----------------------------
+const lockScreen = document.getElementById("lock-screen");
+const input = document.getElementById("code-input");
+const btn = document.getElementById("unlock-btn");
+const error = document.getElementById("error-msg");
+
+btn.addEventListener("click", checkCode);
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") checkCode();
+});
+
+function checkCode() {
+  if (input.value === "1234") {
+    lockScreen.style.display = "none";
+  } else {
+    error.textContent = "Incorrect code";
+    input.value = "";
+  }
+}
+</script>
 
 </body>
 </html>
