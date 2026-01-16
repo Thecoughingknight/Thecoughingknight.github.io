@@ -8,5 +8,16 @@
     "description": "Survive five nights at Freddy Fazbear’s Pizza.",
     "page": "games/fnaf-1.html",
     "added": "2026-01-16"
+  },
+
+  {
+    "id": "fnaf2",
+    "title": "FNAF 2",
+    "thumbnail": "https://example.com/mynewgame.png",
+    "genre": "Horror",
+    "year": 2014,
+    "description": "Survive.",
+    "page": "games/fnaf-2.html",
+    "added": "2026-01-17"
   }
 ]
