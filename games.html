@@ -1,1 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Games – The Roaring Web</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link rel="stylesheet" href="index.html"><!-- optional if you externalize later -->
+
+<style>
+body { background:black; color:white; font-family:Arial; }
+main { max-width:1200px; margin:40px auto; padding:16px; }
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="topbar">
+    <div class="logo">The Roaring Web</div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="settings.html">Settings</a>
+    </nav>
+  </div>
+</header>
+
+<main class="section">
+  <h2>All Games</h2>
+  <input class="search" id="search" placeholder="Search games...">
+
+  <div class="games-grid">
+    <a class="game-link" href="games/fnaf-1.html">
+      <article class="game-card" data-category="horror">
+        <div class="game-thumbnail">
+          <img src="https://i.imgur.com/A69XUv5.png">
+        </div>
+        <div class="game-title">FNAF 1</div>
+        <div class="game-meta">Horror • 2014 • Playable</div>
+      </article>
+    </a>
+  </div>
+</main>
+
+<script>
+const search = document.getElementById("search");
+const cards = document.querySelectorAll(".game-card");
+
+search.oninput = () => {
+  const v = search.value.toLowerCase();
+  cards.forEach(c => {
+    c.style.display = c.innerText.toLowerCase().includes(v) ? "block" : "none";
+  });
+};
+</script>
+
+</body>
+</html>
