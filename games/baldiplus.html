@@ -7,13 +7,13 @@
 
 <style>
 :root {
-  --bg:#000;
-  --fg:#fff;
-  --muted:#ccc;
-  --border:1px solid #fff;
-  --radius:6px;
-  --glow:0 0 18px rgba(255,255,255,0.45);
-  --font:Arial,sans-serif;
+  --bg:#000; --fg:#fff; --muted:#ccc; --border:1px solid #fff;
+  --radius:6px; --glow:0 0 18px rgba(255,255,255,0.45); --font:Arial,sans-serif;
+}
+/* 🌟 NEON THEME ADDED */
+[data-theme="neon"] {
+  --bg:#000; --fg:#00ff9d; --muted:#00c77a;
+  --border:1px solid #00ff9d; --glow:0 0 18px rgba(0,255,157,0.7);
 }
 
 * { box-sizing:border-box; margin:0; padding:0; font-family:var(--font); }
@@ -29,43 +29,14 @@ header { border-bottom:var(--border); }
 .container { max-width:1200px; margin:40px auto; padding:20px; border:var(--border); border-radius:var(--radius); }
 h1 { border-bottom:var(--border); padding-bottom:8px; margin-bottom:16px; }
 
-.iframe-wrapper {
-  position:relative;
-  width:100%;
-}
-
-iframe {
-  width:100%;
-  height:600px;
-  border:var(--border);
-  border-radius:var(--radius);
-  background:black;
-}
+.iframe-wrapper { position:relative; width:100%; }
+iframe { width:100%; height:600px; border:var(--border); border-radius:var(--radius); background:black; }
 
 /* Floating fullscreen button */
-.fullscreen-float {
-  position:absolute;
-  bottom:12px;
-  right:12px;
-  background:black;
-  color:white;
-  border:var(--border);
-  padding:8px 14px;
-  border-radius:20px;
-  cursor:pointer;
-  font-size:0.85rem;
-  transition:0.2s ease;
-  opacity:0.85;
-}
-.fullscreen-float:hover {
-  background:white;
-  color:black;
-  transform:scale(1.08);
-  opacity:1;
-}
+.fullscreen-float { position:absolute; bottom:12px; right:12px; background:black; color:white; border:var(--border); padding:8px 14px; border-radius:20px; cursor:pointer; font-size:0.85rem; transition:0.2s ease; opacity:0.85; }
+.fullscreen-float:hover { background:white; color:black; transform:scale(1.08); opacity:1; }
 
 .info { margin-top:16px; font-size:0.9rem; color:var(--muted); }
-
 footer { max-width:1200px; margin:40px auto; padding:20px; border-top:var(--border); text-align:center; font-size:0.8rem; }
 </style>
 </head>
@@ -77,6 +48,7 @@ footer { max-width:1200px; margin:40px auto; padding:20px; border-top:var(--bord
     <nav class="nav-links">
       <a href="../index.html">Home</a>
       <a href="../games.html">Games</a>
+      <a href="../announcements.html">Announcements</a>
       <a href="../settings.html">Settings</a>
     </nav>
   </div>
@@ -87,8 +59,6 @@ footer { max-width:1200px; margin:40px auto; padding:20px; border-top:var(--bord
 
   <div class="iframe-wrapper">
     <iframe id="gameframe" src="../gamefiles/baldiplus/"></iframe>
-
-    <!-- Floating fullscreen button -->
     <button class="fullscreen-float" onclick="goFullscreen()">⛶ Fullscreen</button>
   </div>
 
@@ -99,22 +69,20 @@ footer { max-width:1200px; margin:40px auto; padding:20px; border-top:var(--bord
   </div>
 </div>
 
-<footer>
-  © 2026 The Roaring Web
-</footer>
+<footer>© 2026 The Roaring Web</footer>
 
 <script>
+// 1. FULLSCREEN LOGIC
 function goFullscreen() {
   const iframe = document.getElementById("gameframe");
-
-  if (iframe.requestFullscreen) {
-    iframe.requestFullscreen();
-  } else if (iframe.webkitRequestFullscreen) {
-    iframe.webkitRequestFullscreen();
-  } else if (iframe.msRequestFullscreen) {
-    iframe.msRequestFullscreen();
-  }
+  if (iframe.requestFullscreen) { iframe.requestFullscreen(); } 
+  else if (iframe.webkitRequestFullscreen) { iframe.webkitRequestFullscreen(); } 
+  else if (iframe.msRequestFullscreen) { iframe.msRequestFullscreen(); }
 }
+
+// 2. GLOBAL THEME LOADER
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme) { document.documentElement.setAttribute("data-theme", savedTheme); }
 </script>
 
 </body>
