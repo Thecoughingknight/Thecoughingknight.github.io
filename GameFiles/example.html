@@ -1,58 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Simple Drag</title>
-    <style>
-        #myBox {
-            width: 100px;
-            height: 100px;
-            background-color: #ff4757;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: sans-serif;
-            cursor: grab;
-            position: absolute; /* Required for movement */
-            user-select: none;   /* Prevents highlighting text while dragging */
-            border-radius: 8px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Sim - Basic Demo</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="toolbar">
+        <button onclick="App.addNode()">Add Logic Block</button>
+        <button onclick="StorageManager.saveCanvas()">Save State</button>
+        <button onclick="StorageManager.loadCanvas()">Load State</button>
+    </div>
 
-    <div id="myBox">Drag Me!</div>
+    <div id="canvas"></div>
 
-    <script>
-        const box = document.getElementById("myBox");
-        let isDragging = false;
-        let offset = { x: 0, y: 0 };
-
-        // 1. When the mouse button is pressed
-        box.addEventListener("mousedown", (e) => {
-            isDragging = true;
-            box.style.cursor = "grabbing";
-            
-            // Calculate where inside the box the user clicked
-            offset.x = e.clientX - box.offsetLeft;
-            offset.y = e.clientY - box.offsetTop;
-        });
-
-        // 2. When the mouse moves
-        document.addEventListener("mousemove", (e) => {
-            if (isDragging) {
-                // Move the box to the mouse position minus the original offset
-                box.style.left = (e.clientX - offset.x) + "px";
-                box.style.top = (e.clientY - offset.y) + "px";
-            }
-        });
-
-        // 3. When the mouse button is released
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-            box.style.cursor = "grab";
-        });
-    </script>
-
+    <script src="js/storage.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
