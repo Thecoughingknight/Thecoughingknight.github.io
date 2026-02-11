@@ -1,103 +1,94 @@
 /**
- * ENGINE.JS
- * Handles: Logic evaluation, Node management, and Bezier Curve rendering.
+ * ENGINE.JS - The Logic & Physics Core
  */
 
 class Node {
-    constructor(type, x, y, pins, gateType, internalLogic = null) {
+    constructor(type, pins, gateType, x = 100, y = 100, savedData = null) {
         this.id = Math.random().toString(36).substr(2, 9);
-        this.type = type; // 'gate', 'input', or 'output'
-        this.gateType = gateType; // 'nand', 'and', 'timer', etc.
+        this.type = type; // 'gate', 'input', 'output'
+        this.gateType = gateType;
         this.x = x;
         this.y = y;
         this.pins = pins;
-        this.label = "";
-        this.internalLogic = internalLogic;
-
-        // Logic State
-        this.numInputs = (type === 'gate') ? pins : (type === 'output' ? pins : 0);
-        this.numOutputs = (type === 'gate') ? (internalLogic ? internalLogic.numOut : 1) : (type === 'input' ? pins : 0);
+        this.label = savedData?.label || "";
         
+        // State
+        this.numInputs = (type === 'gate') ? pins : (type === 'output' ? 1 : 0);
+        this.numOutputs = (type === 'gate') ? 1 : (type === 'input' ? 1 : 0);
         this.inputStates = Array(this.numInputs).fill(false);
         this.outputStates = Array(this.numOutputs).fill(false);
 
-        // Timer/Delay specifics
-        this.timerInterval = 1000;
+        // Special Properties
+        this.timerInterval = savedData?.timerInterval || 1000;
         this.timerId = null;
 
-        // Visuals
         this.element = this.createDOM();
-        this.initSpecialLogic();
+        this.initLogic();
         this.updatePosition();
     }
 
-    initSpecialLogic() {
+    initLogic() {
         if (this.gateType === 'timer') {
             this.timerId = setInterval(() => {
                 this.outputStates[0] = !this.outputStates[0];
                 app.runLogic();
             }, this.timerInterval);
         }
-        // Default NAND to TRUE (since 0 & 0 inverted is 1)
-        if (this.gateType === 'nand' || this.gateType === 'not') {
-            this.outputStates[0] = true;
-        }
+        if (this.gateType === 'nand' || this.gateType === 'not') this.outputStates[0] = true;
     }
 
     createDOM() {
         const div = document.createElement('div');
         div.className = `node node-${this.type === 'gate' ? 'gate' : 'io'}`;
-        if (this.gateType === 'timer' || this.gateType === 'delay') div.classList.add('node-special');
+        
+        // Inner Content
+        const label = document.createElement('div');
+        label.className = 'node-label';
+        label.innerText = this.label || (this.gateType || this.type).toUpperCase();
+        div.appendChild(label);
 
-        // Body Text
-        const body = document.createElement('div');
-        body.innerText = (this.gateType || this.type).toUpperCase();
-        div.appendChild(body);
-
-        // IO Click handling
-        if (this.type === 'input') {
-            const circle = document.createElement('div');
-            circle.className = 'io-circle';
-            circle.onclick = (e) => {
+        // Interaction Listeners
+        div.onmousedown = (e) => {
+            if (e.shiftKey) {
                 e.stopPropagation();
+                this.gateType === 'timer' ? app.openTimerModal(this) : app.openLabelModal(this);
+                return;
+            }
+            app.startDragging(this, e);
+        };
+
+        // Hover tracking for 'Delete' shortcut in main.js
+        div.onmouseenter = () => { app.hoveredNode = this; };
+        div.onmouseleave = () => { if(app.hoveredNode === this) app.hoveredNode = null; };
+
+        // Handle Input Toggles
+        if (this.type === 'input') {
+            div.onclick = (e) => {
+                if (e.shiftKey) return;
                 this.outputStates[0] = !this.outputStates[0];
-                circle.classList.toggle('active', this.outputStates[0]);
+                div.classList.toggle('active', this.outputStates[0]);
                 app.runLogic();
             };
-            div.appendChild(circle);
         }
 
-        if (this.type === 'output') {
-            const circle = document.createElement('div');
-            circle.className = 'io-circle';
-            div.appendChild(circle);
-        }
-
-        // Ports
         this.createPorts(div);
-
-        // Dragging
-        div.onmousedown = (e) => app.startDragging(this, e);
-        
         document.getElementById('canvas-container').appendChild(div);
         return div;
     }
 
     createPorts(parent) {
-        const rowH = 20;
-        // Inputs (Left side)
+        const spacing = 20;
         for (let i = 0; i < this.numInputs; i++) {
             const p = document.createElement('div');
             p.className = 'port port-in';
-            p.style.top = (this.numInputs > 1) ? `${15 + i * rowH}px` : '50%';
+            p.style.top = `${25 + i * spacing}px`;
             p.onmouseup = (e) => { e.stopPropagation(); app.completeWire(this, i); };
             parent.appendChild(p);
         }
-        // Outputs (Right side)
         for (let i = 0; i < this.numOutputs; i++) {
             const p = document.createElement('div');
             p.className = 'port port-out';
-            p.style.top = (this.numOutputs > 1) ? `${15 + i * rowH}px` : '50%';
+            p.style.top = `${25 + i * spacing}px`;
             p.onmousedown = (e) => { e.stopPropagation(); app.startWire(this, i); };
             parent.appendChild(p);
         }
@@ -105,28 +96,18 @@ class Node {
 
     evaluate() {
         const oldState = JSON.stringify(this.outputStates);
-        
         if (this.type === 'gate') {
             const a = this.inputStates[0];
             const b = this.inputStates[1];
-
             switch (this.gateType) {
-                case 'nand': this.outputStates[0] = !(a && b); break;
                 case 'and':  this.outputStates[0] = (a && b); break;
+                case 'nand': this.outputStates[0] = !(a && b); break;
                 case 'or':   this.outputStates[0] = (a || b); break;
                 case 'not':  this.outputStates[0] = !a; break;
-                case 'delay': 
-                    // Simple pass-through for demo, actual delay uses setTimeout
-                    this.outputStates[0] = a; 
-                    break;
+                case 'delay': this.outputStates[0] = a; break;
             }
         }
-
-        if (this.type === 'output') {
-            const circle = this.element.querySelector('.io-circle');
-            if (circle) circle.classList.toggle('active', this.inputStates[0]);
-        }
-
+        if (this.type === 'output') this.element.classList.toggle('active', this.inputStates[0]);
         return oldState !== JSON.stringify(this.outputStates);
     }
 
@@ -137,13 +118,9 @@ class Node {
 
     getPortPos(isInput, idx) {
         const rect = this.element.getBoundingClientRect();
-        const rowH = 20;
-        const count = isInput ? this.numInputs : this.numOutputs;
-        let yOffset = (count > 1) ? (15 + idx * rowH + 5) : (rect.height / 2);
-        
         return {
             x: isInput ? this.x : this.x + rect.width,
-            y: this.y + yOffset
+            y: this.y + 25 + (idx * 20) + 5
         };
     }
 
@@ -153,8 +130,8 @@ class Node {
     }
 }
 
-// Global App Logic for Engine
-const app = {
+// Logic Orchestration
+Object.assign(app, {
     nodes: [],
     wires: [],
     activeWire: null,
@@ -162,20 +139,14 @@ const app = {
     offset: { x: 0, y: 0 },
     svg: document.getElementById('wire-layer'),
 
-    addNode(type, pins, gateType) {
-        const n = new Node(type, 100, 100, pins, gateType);
+    addNode(type, pins, gateType, savedData = null) {
+        const n = new Node(type, pins, gateType, 150, 150, savedData);
         this.nodes.push(n);
         this.runLogic();
-    },
-
-    startDragging(node, e) {
-        this.draggingNode = node;
-        this.offset.x = e.clientX - node.x;
-        this.offset.y = e.clientY - node.y;
+        return n;
     },
 
     startWire(node, idx) {
-        const pos = node.getPortPos(false, idx);
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("class", "wire wire-drag");
         this.svg.appendChild(path);
@@ -183,7 +154,7 @@ const app = {
     },
 
     completeWire(toNode, toIdx) {
-        if (!this.activeWire) return;
+        if (!this.activeWire || this.activeWire.fromNode === toNode) return;
         const wire = { ...this.activeWire, toNode, toIdx };
         wire.element.setAttribute("class", "wire");
         this.wires.push(wire);
@@ -192,10 +163,7 @@ const app = {
     },
 
     runLogic() {
-        // Simple propagation: Reset inputs then re-calculate
         this.nodes.forEach(n => n.inputStates.fill(false));
-        
-        // Loop multiple times to handle multi-stage propagation
         for (let i = 0; i < 5; i++) {
             this.wires.forEach(w => {
                 w.toNode.inputStates[w.toIdx] = w.fromNode.outputStates[w.fromIdx];
@@ -209,35 +177,10 @@ const app = {
         this.wires.forEach(w => {
             const p1 = w.fromNode.getPortPos(false, w.fromIdx);
             const p2 = w.toNode.getPortPos(true, w.toIdx);
-            
-            // --- S-CURVE BEZIER MATH ---
-            const ctrlX = Math.abs(p1.x - p2.x) / 2;
-            const d = `M ${p1.x} ${p1.y} C ${p1.x + ctrlX} ${p1.y}, ${p2.x - ctrlX} ${p2.y}, ${p2.x} ${p2.y}`;
-            
+            const ctrl = Math.abs(p1.x - p2.x) / 2;
+            const d = `M ${p1.x} ${p1.y} C ${p1.x + ctrl} ${p1.y}, ${p2.x - ctrl} ${p2.y}, ${p2.x} ${p2.y}`;
             w.element.setAttribute("d", d);
             w.element.classList.toggle('active', w.fromNode.outputStates[w.fromIdx]);
         });
     }
-};
-
-// Global Mouse Listeners
-window.onmousemove = (e) => {
-    if (app.draggingNode) {
-        app.draggingNode.x = e.clientX - app.offset.x;
-        app.draggingNode.y = e.clientY - app.offset.y;
-        app.draggingNode.updatePosition();
-        app.updateWireVisuals();
-    }
-    if (app.activeWire) {
-        const p1 = app.activeWire.fromNode.getPortPos(false, app.activeWire.fromIdx);
-        app.activeWire.element.setAttribute("d", `M ${p1.x} ${p1.y} L ${e.clientX} ${e.clientY}`);
-    }
-};
-
-window.onmouseup = () => {
-    app.draggingNode = null;
-    if (app.activeWire) {
-        app.activeWire.element.remove();
-        app.activeWire = null;
-    }
-};
+});
