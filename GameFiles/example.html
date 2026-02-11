@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logic Sim - Basic Demo</title>
+    <title>LogicSim Pro - v0.9</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="toolbar">
-        <button onclick="App.addNode()">Add Logic Block</button>
-        <button onclick="StorageManager.saveCanvas()">Save State</button>
-        <button onclick="StorageManager.loadCanvas()">Load State</button>
+    <div class="version-tag">LOGIC SIM v0.9</div>
+
+    <div id="canvas-container">
+        <svg id="wire-layer"></svg>
     </div>
 
-    <div id="canvas"></div>
+    <div class="toolbar">
+        <div class="tool-btn menu-btn" onclick="app.toggleMenu(event, 'main-menu')">MENU</div>
+        <div class="tool-btn" onclick="app.toggleMenu(event, 'io-menu')">I/O</div>
+        <div class="tool-btn" onclick="app.addNode('gate', 2, 'nand')">NAND</div>
+        <div class="tool-btn" onclick="app.addNode('gate', 0, 'timer')">TIMER</div>
+        <div class="tool-btn" onclick="app.addNode('gate', 1, 'delay')">DELAY</div>
+    </div>
+
+    <div id="main-menu" class="menu-popup"> ... </div>
 
     <script src="js/storage.js"></script>
     <script src="js/engine.js"></script>
