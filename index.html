@@ -63,7 +63,7 @@
             padding-bottom: 10px;
         }
 
-        /* NEW CARD STYLES */
+        /* CARD STYLES */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -126,10 +126,16 @@
                 <div class="section-title">Library</div>
                 
                 <div class="games-grid">
-                    <div class="game-card" onclick="launchGame('example.html')">
-                        <span class="game-icon">🎮</span>
-                        <div class="game-title">Example Game</div>
-                        <div class="game-desc">Click to launch cloaked</div>
+                    <div class="game-card" onclick="launchGame('logicgates/index.html')">
+                        <span class="game-icon">🔌</span>
+                        <div class="game-title">Logic Gates</div>
+                        <div class="game-desc">Build and test circuits</div>
+                    </div>
+
+                    <div class="game-card" onclick="launchGame('papermincraft/index.html')">
+                        <span class="game-icon">⛏️</span>
+                        <div class="game-title">Paper Minecraft</div>
+                        <div class="game-desc">2D Crafting Adventure</div>
                     </div>
                 </div>
             </div>
@@ -148,6 +154,8 @@
     <script>
         // --- Game Launch Function ---
         function launchGame(filename) {
+            // Note: This expects your files to be inside a folder named 'GameFiles' 
+            // relative to this HTML file.
             const gamePath = 'GameFiles/' + filename;
             const fullURL = new URL(gamePath, window.location.href).href;
 
@@ -182,18 +190,16 @@
         // --- Inactivity Logic ---
         (function() {
             let timeout;
-            const INACTIVITY_LIMIT = 5000; // 5 seconds in milliseconds
-            const REDIRECTION_URL = 'https://archiveofourown.org/works/70737641/chapters/183875526'; // PLACEHOLDER: Put your link here
+            const INACTIVITY_LIMIT = 5000; 
+            const REDIRECTION_URL = 'https://archiveofourown.org/works/70737641/chapters/183875526';
 
             function resetTimer() {
                 clearTimeout(timeout);
                 timeout = setTimeout(() => {
-                    // Opens the placeholder link in a new tab
                     window.open(REDIRECTION_URL, '_blank');
                 }, INACTIVITY_LIMIT);
             }
 
-            // Listen for any activity
             window.onload = resetTimer;
             document.onmousemove = resetTimer;
             document.onkeydown = resetTimer;
